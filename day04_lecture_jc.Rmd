@@ -136,22 +136,72 @@ gsub("(\\d+)(\\w)(\\d+)", "\\2", longer.thing) #now its calling the 2nd parens (
 
 ```{r}
 # factor()
-#behave like they are numbers with labels.
+#behave like they are numbers with labels. they have levels. duh.
+#strings will often come in as factors. if you dont want that, you can define how the string is read in
+
+x <- c(rep("a", 20), rep("b", 20), rep("c", 20))
+x
+summary(x)
+x.factor <- factor(x)
 
 
 # levels()
+levels(x.factor) #we can get the levels. 
 
 # summary()
+summary(x.factor) #gives you the nubmer of cases
 
 # coersion
 
 # subsetting
+sleep
+mysleep <- sleep
+summary(mysleep) #col 1 is min/max; group tells us 10 cases of 1 and 10 cases of 2
+class(mysleep$group) #tell us if group is considered a factor
+levels(mysleep$group) #tells us the number of levels
 
 # droplevels
+mysleep.group1 <- mysleep[mysleep$group == "1", ]
+summary(mysleep.group1) #have all the data for group 1 only
 
-# changing levels (labels)
+mysleep.group1 <- droplevels(mysleep.group1) #directly changing this object to say
+summary(mysleep.group1) #got rid of any level of a factor without data, no longer bugs you about it.
+
+# changing levels (labels); change "onh" to "1"
+mysleep <- sleep
+levels(mysleep$group)
+
+levels(mysleep$group) <- c("pre", "post") #this order matters. level 1 is space 1.
+
+levels(mysleep$group)
+summary(mysleep) #now it defines it as pre/post in the data output.
+
+head(mysleep)
+
+mysleep.bad <- sleep
+levels(mysleep.bad$group) <- c("2", "1")
+summary(mysleep.bad$group)
+
+
+colnames(mysleep) <- c("extra sleep", "treatment group", "subject")
+head(mysleep)
 
 # re-ordering
+mysleep <- sleep
+levels(mysleep$group) <- c("pre", "post")
+summary(mysleep)
+#now was want to move post to level 2 and pre to level 1
+# levels(mysleep$group) <- c("post", "pre") #changes data labels, not order of levels. screws up data
+# levels(mysleep$group)
+
+#might do this to change the referent level
+mysleep$group2 <- mysleep$group #assign value to column that doesnt exhist, it will create the column
+head(mysleep)
+mysleep$group2 <- factor(mysleep$group2, levels = c("post", "pre"))
+summary(mysleep)
+head(mysleep)
+tail(mysleep)
+
 
 ```
 
@@ -160,6 +210,20 @@ gsub("(\\d+)(\\w)(\\d+)", "\\2", longer.thing) #now its calling the 2nd parens (
 
 ```{r}
 # single value
+mysleep$group3 <- mysleep$group #can just make a new column, dont need to do something special
+mysleep$experiment <- 1 #gave the whole column a single value "1"
+summary(mysleep)
+
+#ifelse()
+mysleep$sleeplevel <- ifelse(mysleep$extra >= 1, "high", "low") #true = high, false = low
+summary(mysleep)
+mysleep$sleeplevel <- as.factor(ifelse(mysleep$extra >= 1, "high", "low"))
+summary(mysleep)
+mysleep$sleeplevel <- factor(ifelse(mysleep$extra >= 1, "high", "low"), levels = c("low", "high"))
+summary(mysleep)
+
+mysleep$sleeplevel <- ifelse(mysleep$extra >=1, "high", ifelse(mysleep$extra < 1, "low", NA))
+summary(mysleep)
 
 # using subsetting
 
@@ -168,6 +232,9 @@ gsub("(\\d+)(\\w)(\\d+)", "\\2", longer.thing) #now its calling the 2nd parens (
 ## Using xtabs() to check coding/cross-tabs
 
 ```{r}
+xtabs(~ group + group2, data = mysleep) #allows us to double check that if its pre in the data it isnt also post
+xtabs(~ sleeplevel + extra, data = mysleep)
+xtabs(~ extra + sleeplevel, data = mysleep) #this is a frequency plot; after 2 levels it gets to a mess.
 
 ```
 
@@ -186,7 +253,10 @@ gsub("(\\d+)(\\w)(\\d+)", "\\2", longer.thing) #now its calling the 2nd parens (
   - no universal "deal with NAs" argument
   
 ```{r}
-
+#missing data - could be a value but i dont know what it is; there could have been a value but i dont know it
+#NAs means there isnt an existing value
+#cor() can tell it to deal with NAs by only running the data without the NAs.
+#ignore the NAs, need to tell it for each function "na.rm = true"
 ```
 
 ## NULL
@@ -202,7 +272,7 @@ gsub("(\\d+)(\\w)(\\d+)", "\\2", longer.thing) #now its calling the 2nd parens (
   - helpful to be able to identify, locate them
 
 ```{r}
-
+sqrt(-1)
 ```
 
 # Data types, classes, & coersion
@@ -212,6 +282,7 @@ gsub("(\\d+)(\\w)(\\d+)", "\\2", longer.thing) #now its calling the 2nd parens (
 
 # class()
 
+#is.X functions tell you if something is true/false whatehver you want.
 ```
 
 `is.X` family of functions (`is.factor()`, `is.na()`, `is.finite()`, etc.)
