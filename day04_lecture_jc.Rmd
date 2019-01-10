@@ -1,0 +1,273 @@
+---
+title: "Day 4 Lecture"
+output: html_document
+---
+
+# Today's agenda
+
+  - Review & questions
+  - Character/string data
+  - Factors
+  - Excursion: simple data frame manipulation, `xtabs()`
+  - PRACTICE: working with factors, part 1
+  - Special values: NA/NULL/Inf/NaN
+  - PRACTICE: data type coersion
+  - Lists
+  - Creating data frames from scratch
+  - Combining data frames
+  - PRACTICE: binding & merging
+
+# Review
+  - Go over Day 3 Practice
+  - Day 3 Homework example
+  - Knitting notes
+
+# Characters
+  - more primitive than factors
+  - can manipulate with regular expressions, other text functions
+
+Some handy text stuff
+
+```{r}
+#quotes
+
+x <- "a string"
+x
+y <- 'also a string'
+y
+z <- "this is a 'string' too"
+z
+w <- 'this is also a "string"'
+w
+
+
+# cat(), print()
+print(x)
+cat(x)
+
+cat(x, file = "cat_example.txt") #prints it as a text file
+
+sample.ttest <- t.test(rnorm(20, 0, 1), rnorm(20, 2, 1))
+sample.ttest
+print(sample.ttest)
+
+printed.ttest <- print(sample.ttest) 
+
+# special characters: \t, \n, "escaping"
+
+x <- "here is a cool result: 10"
+cat(x)
+y <- "here's a cool result:\10"
+y
+
+cat("some\ntest")
+cat("some\\ntext") #tells r to treat the 2nd slash as an actual slash
+# cat("some\"text\\"")
+
+
+# nchar()
+
+nchar("hello") #number of characters
+length("hello") #number of words
+
+# paste(), strsplit()
+
+paste("hello", "there")
+
+paste("hello", "there", sep = "") #means that there is no space between the two pasted words
+x <- c("here", "are", "some", "strings")
+x
+
+paste("prefix", x) #puts prefex infront of each "x" term
+paste("prefix", x, sep = "") #prefix pasted to each word with no space
+
+paste(x, collapse = " ") #collapse is another term for sep i think
+
+# stringr package
+
+x
+y <- paste(x, "suffix", sep = "_")
+y
+w <- paste(x, "suffix", sep = ".")
+w
+
+strsplit(y, split = "_") #splits them into different lines.
+
+strsplit(w, split = ".") #splitting on every character
+strsplit(w, split = "\\.") #splits them into different lines.
+
+
+# grep(), grepl(), gsub()
+x
+grep("here", x) #first put the string you are looking for, and then the location where its embeded
+grep("e", x) #says that it found the letter e in the 1, 2,  and 3rd strings within "x" vector
+
+grepl("here", x) #use this for logicals. get the true/false answers. can do a txt search 
+                  #any time we find these characters report a true/false.
+
+gsub("e", "E", x) #search and replace function. give a thing to search, then a thing to replace, then the vector
+gsub("e", "", x)
+
+longer.thing <- c("10f5675", "59j4957", "30k4934")
+
+gsub("\\d+\\w(\\d+)", "\\1", longer.thing) #the number refers to the specific parenthesis
+
+gsub("(\\d+)(\\w)(\\d+)", "\\2", longer.thing) #now its calling the 2nd parens (the letter value)
+
+
+
+
+```
+
+# Factors
+  - Actually numbers under the hood VIP VIP VIP
+  - Act like numbers + labels VIP VIP VIP
+  - VERY useful for many kinds of analyses
+  - if a column is a *property* of data (not a measure itself), factors are usually best
+    - groupings = good as factors
+    - conditions = good as factors
+  - if a column is *data*, maybe consider keeping it a string
+    - free response answers = bad as factors
+  - `as.factor()` coerces to a factor
+  - `factor()` creates a factor
+  - factors have *levels*: categories
+  - `stringsAsFactors` : option for how to read in character vectors
+    - = FALSE if you don't want to read in characters as factors
+
+```{r}
+# factor()
+#behave like they are numbers with labels.
+
+
+# levels()
+
+# summary()
+
+# coersion
+
+# subsetting
+
+# droplevels
+
+# changing levels (labels)
+
+# re-ordering
+
+```
+
+# Data manipulation excursion
+## Creating (simple) new columns
+
+```{r}
+# single value
+
+# using subsetting
+
+```
+
+## Using xtabs() to check coding/cross-tabs
+
+```{r}
+
+```
+
+# PRACTICE: #0 -- #6
+
+# NAs, NULLs
+
+## NAs
+  - missing data
+  - can be a huge pain
+  - hugely important to handle properly!
+  - no universal "handle NAs" or "ignore NAs" argument
+  - sometimes `na.rm = TRUE` (like for `mean()`)
+  - sometimes it's other stuff
+  - `cor()` use = "pairwise.complete.obs"
+  - no universal "deal with NAs" argument
+  
+```{r}
+
+```
+
+## NULL
+  - another special value
+  - means "nothing" or "doesn't exist" (contrast with "missing" or "unknown")
+
+```{r}
+
+```
+
+## Inf, -Inf, NaN
+  - can sometimes result from mathematical operations
+  - helpful to be able to identify, locate them
+
+```{r}
+
+```
+
+# Data types, classes, & coersion
+
+```{r}
+# typeof()
+
+# class()
+
+```
+
+`is.X` family of functions (`is.factor()`, `is.na()`, `is.finite()`, etc.)
+`as.X` family of functions (`as.factor()`, `as.numeric()`, `as.data.frame()`, etc.)
+
+# PRACTICE: #7
+
+# Lists
+  - similar to vectors
+  - can contain different data types
+  - use [[ ]] to pull out values
+  - handy for glomming large/complex objects together
+  - data frames are special lists!
+  
+```{r}
+
+```
+
+# Creating data frames
+  - handy, especially for making "look-up tables"
+  
+```{r}
+# data.frame()
+
+```
+
+# PRACTICE: #8 -- #11
+
+# Combining data frame objects
+## `rbind()` and `cbind()`
+  - rbind
+    - glues rows on top of each other
+    - expects same columns
+    - new and improved `bind_rows()` in `dplyr` package
+  - cbind
+    - glues columns next to each other
+    - need to be the same length    
+```{r}
+
+```
+
+## `merge()` and `*_join()` from `dplyr` package
+```{r}
+
+```
+    - simplest: have ONE column in common, named the same thing (with the same values)
+    - can get MUCH more complex
+    - `nrow()` good check on what was gained/lost during a merge
+    - "join" functions in `dplyr`
+      - `inner_join()` is like all = FALSE
+      - `full_join()` is like all = TRUE
+      - `left_join()`, `right_join()`, etc.
+      - see ?join for more details
+
+
+
+# PRACTICE: #12 -- #14
+
+

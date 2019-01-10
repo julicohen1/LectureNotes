@@ -7,6 +7,16 @@ output: html_document
 
 # Questions?
 
+#working directory
+
+```{r}
+getwd()
+#setwd()
+```
+
+#..means go up a folder and then folder names to go down.
+
+
 # R Markdown vs. scripts
 Sweave: the original "reproducible document", mix of LaTeX and R
 
@@ -14,10 +24,10 @@ R Markdown: one of the "cutting edge" formats, especially well-integrated into R
 
 The following is a code chunk, and when `knitr()` is run on this document, it will display both the code and the output.
 
-```{r}
+```{r echo=FALSE} 
 x <- rnorm(10000)
 hist(x)  # this is a histogram
-
+# echo will make the document without showing the code. if you do True, it will show all the code.
 t.test(x)
 ```
 
@@ -50,13 +60,13 @@ More documentation on Markdown and R Markdown:
 x <- rnorm(100, mean = 0, sd = 2)
 y <- rnorm(100, mean = 1, sd = 1)
 ttest.results <- t.test(x, y)
-ttest.results
+#ttest.results
 
 # what if ttest.results took minutes/hours to compute?
 save(ttest.results, file = "big important object.RData")
-ttest.results
-rm(ttest.results)
-ttest.results
+# ttest.results
+# rm(ttest.results)
+# ttest.results
 load("big important object.RData")
 ttest.results
 
@@ -96,7 +106,7 @@ Package for other stats packages (SPSS, SAS, Stata):
 ?read.table
 
 mydata <- read.csv(filename, na.strings = c("NA", "N/A", "n/a", " ", "nuthin"))
-
+#what missing data is represented as...so let the program know "na, NA, etc"
 ?readLines
 ?scan
 ```
@@ -114,10 +124,11 @@ Gotcha:
 write.table(mydata, file = "outputfile.txt", 
             sep = "\t",   # this makes the output tab-delimited
             row.names = FALSE)  # good for exporting data
+        #this can default to "true", so switch it to false.
 
 write.csv(mydata, file = "outputfile.csv", row.names = FALSE) # good for writing CSVs
 ```
-
+<!-- #one hash- many hashes defines differnt types of headers -->
 # Data types
    - numeric
    - logical
@@ -138,18 +149,42 @@ A few handy things with numbers:
 
 ```{r}
 # floating point pitfalls
+#computers can only so much precision of a number. 
+
+x <- 0.1 + 0.2
+x
+x == 0.3 #means that this value is EXACTLY 0.3
 
 # "e" notation for really big numbers
 1e4
 
 # round(), floor(), ceiling()
+x2 <- round(x, 1) #i rounded the value of x to 1
+x2 == 0.3
+
 
 # sample(), rnorm(), rbinom()
 
+sample(10) #quick way to sample from 1 to number defined.
+?sample
+sample(1:10, 5) #samples without replacement
+sample(1:10, 5, replace = TRUE) #samples with replacement
+
+rnorm(10)
+
+rbinom(10, size = 5, prob = .5)
+many.flilps <- rbinom(1e6, size = 10, prob = .2)
+mean(many.flilps)
+
+?rnorm
+#10 numbers from a binomail distrib, size is options (2 for coin), and prob of success (for each flip what is the prob...if weird coin that always is heads, prob is 1.0)
 # the r/p/d families
 
 # quantile()
+x <- rnorm(1e5, mean = 2, sd = 5)
+quantile(x)
 
+quantile(x, seq(0, 1, .1))
 ```
 
 
@@ -170,17 +205,69 @@ A few handy things with numbers:
     - `&&` and `||`  for more specific programming situations
     
 ```{r}
+#operators vs. functions
+2+2 #this is a function
+'+' (2,2)
+
 # basic forms
+#they look like math but bring back logical values
+1 >2 #"false"
+2 >1 #"true"
+
+class(1)
+class(TRUE) #helps confirm that something is the data type you think it is
+
+1 == 2 #this is a comparison, is EQUAL to?
+x <- "a string"
+x == "a string" # this is very narrow
+
+x != "a string" # not equal to?
+
+x <- 1:5
+x <= 3
+x >= 3
+#will return a vector of is 1 less than or equal to 3, and so on (true and false)
+
+TRUE & TRUE
+TRUE & FALSE
+# need both to be true for them to be true
+
+TRUE | FALSE #this is or...only need 1 true
+
+x <- 1:6
+x < 3
+x >3
+
+(x > 2) & (x < 5) #
+!(x > 4 | x < 3)
 
 # "shortcut" forms (avoid!)
+
+F
+T
+#just dont use them, can cause confusion
 
 # examples of comparisons
 
 # which()
+x < 5
+
+set.seed(42)
+x <- sample(1:10, 100, replace = TRUE)
+x == 7
+which(x==7) #tells you which one comes back as your "7" values aka trues
 
 # logicals for subsetting
 
+
+
 # %in%
+all.values <- c("a", "b", "c", "d")
+
+x <- sample(all.values, 100, TRUE)
+x
+x == c("a", "b") #nope, this iwill not help you
+x %in% c("a", "b") #this will now verify with whether which values are a and b
 
 ```
 
@@ -227,7 +314,7 @@ Some handy text stuff
 
 ```{r}
 # factor()
-
+?factor
 # levels()
 
 # summary()
@@ -336,14 +423,14 @@ is.na(NA)
 
 ## Generic functions
 ```{r}
-scottdata <- read.csv("scottdata/CognitionPaperModifiedData.csv")
-summary(scottdata)
-summary(scottdata$Corpus)
-example.lm <- lm(HiSegType ~ LoSegType, data = scottdata)
-summary(example.lm)
-class(scottdata)
-class(scottdata$Corpus)
-class(example.lm)
+# scottdata <- read.csv("scottdata/CognitionPaperModifiedData.csv")
+# summary(scottdata)
+# summary(scottdata$Corpus)
+# example.lm <- lm(HiSegType ~ LoSegType, data = scottdata)
+# summary(example.lm)
+# class(scottdata)
+# class(scottdata$Corpus)
+# class(example.lm)
 
 ```
 
