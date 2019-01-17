@@ -1,0 +1,271 @@
+---
+title: "Day 8 Lecture"
+output: html_document
+---
+
+# Today's agenda
+  - questions/review
+  - if/else
+  - for-loops
+    - counters (sets)
+    - "growing" results
+    - debugging
+    - break, next
+  - simulating data
+  - "roll your own" power analysis
+
+# Questions/review?
+```{r}
+library(dplyr)
+library(ggplot2)
+mydata <- data.frame(n = 1:10,
+                     measure = rnorm(10),
+                     myfactor = c(rep("pre", 4), rep("post", 6)),
+                     stringsAsFactors = FALSE)
+
+head(mydata)
+summary(mydata)
+
+mydata$myfactor2 <- as.factor(mydata$myfactor) #quick and dirty
+levels(mydata$myfactor2)
+
+mydata$myfactor2 <- factor(mydata$myfactor, levels = c("pre", "post"))
+
+mydata$myfactor3 <- factor(mydata$myfactor, levels = c("pre", "post", "something else"))
+
+mydata$myfactor4 <- factor(mydata$myfactor, levels = c("pre", "pos"))
+
+```
+
+
+# if/else
+  - form: if(LOGICAL TEST) { CODE BLOCK if TEST == TRUE  }
+  -       else if(OPTIONAL ADDITIONAL TEST) { CODE BLOCK if TRUE }
+  - "else" code only tested if initial "if" fails
+  - NOTE: "else" MUST be on same line as "}" that closes initial "if" block
+
+```{r}
+# simple examples
+x <- 6
+if(x < 5) {
+  print("x is small")
+} 
+
+x <- 3
+if(x < 5) {
+  print("x is small")
+}  else {
+  print("x must be large")
+}
+#start a curly brace on first line and then move the end to a different line. helps organize. it is looking for 1 true/false value. if true, it will run the code. if false, it will skip
+#else needs to start at the ending point of the if curly brace. else will only run if the if is false.
+
+x <- 1:3
+if (is.na(x)) {
+  print("This is an NA")
+}  else  if(x < 5) {
+  print("x is small")
+}  else  if(x > 5) {
+  print("x must be large")
+}  else {
+  print("x is just right")
+}
+
+#things that go in the brace are things you are trying to control.
+#if NA, need to put that first.
+#if vector, it will only check the first value.
+```
+
+  - compare with `ifelse()`
+    - arguments are: test = [LOGICAL TEST], yes = [VALUE if TEST == TRUE], no = [VALUE if TEST == FALSE]
+
+```{r} 
+
+x <- 1:10
+ifelse(x %% 2 == 0, "even", "odd") #%% divided x by 2, and its odd, what is the remaider.
+
+ifelse(x %% 2 == 0, "even",
+       ifelse(x %% 3, "some other odd", "divisible by 3"))
+
+```
+
+# PRACTICE #1 & #2
+
+# `for` loops
+  - simple way to iterate through a set of code, via a "counter" variable
+  - avoid re-writing code, when possible!
+
+```{r}
+# simple vectorized
+x <- 1:10
+x+2
+x[1] +2
+x[2] +2
+
+# basic structure of a loop
+ for(counter in 1:10) {
+   print(counter)
+ }   #printed number 1 through 10.
+
+for(counter in c("here", "are", "some", "strings")) {
+  print(counter)
+}
+
+values.to.print <- c("a", "b", "c", "d")
+for (counter in values.to.print) { #behind the scenes: counter <- "a"...etc.
+  print(counter)
+}
+
+
+# going from copy-paste to a loop
+
+mysleep <- sleep
+summary(mysleep)
+
+summary(mysleep[mysleep$group == "1", ])
+summary(filter(mysleep, group == "1"))
+
+summary(mysleep[mysleep$group == "1", ])
+summary(mysleep[mysleep$group == "2", ])
+
+for (counter in c("1", "2")) {
+  print(summary(mysleep[mysleep$group == counter, ]))
+  
+} #printing a subset and it tells us what we are printing each time.
+
+for (i in c("1", "2")) {
+  print(i)
+}
+
+```
+
+# Some tips for loops
+
+```{r}
+# "Poor man's progress bar"
+
+for (counter in 1:100) {
+  if(counter %% 10 == 0) {cat(paste("Starting iteration", counter, "\n"))}
+  mymean <- mean(rnorm(1e5))
+}
+
+# using get() to access objects programmatically - get is CRITICAL for doing different thigns.
+ggplot(iris, aes(Sepal.Width)) + geom_histogram()
+ggplot(iris, aes("Sepal.Width")) + geom_histogram()
+ggplot(iris, aes(get("Sepal.Width"))) + geom_histogram()
+
+# you need explicit "print" statements inside loops
+for(this.dim in colnames(iris)[1:4]) { #dim is dimension
+  print(this.dim)
+}
+
+# also for plots!
+for(this.dim in colnames(iris)[1:4]) {
+  print(ggplot(iris, aes(get(this.dim))) + geom_histogram() + xlab(this.dim))
+}
+
+```
+
+
+# PRACTICE #3 & #4
+
+# Building up to a power analysis via simulation
+  - simulate fake data under some parameters
+  - perform test
+  - examine results of many iterations
+
+```{r}
+# quick review of d/p/q/r* family of distribution functions
+?rnorm
+
+x <- sort(rnorm(1000))
+summary(x)
+sd(x)
+hist(x)
+plot(x)
+plot(dnorm(x) ~ x)
+plot(pnorm(x) ~ x)
+plot(qnorm(seq(0, 1, .01)) ~ seq(0, 1, .01))
+
+2*(1-pnorm(abs(1.96)))
+
+# simulating correlations with MASS
+library(MASS) # look out for "masking" of select() from dplyr
+cor.table <- matrix(c(1, .2, .2, 1), nrow = 2)
+cor.table
+some.data <- mvrnorm(n = 10, mu = c(1, 2), Sigma = cor.table, empirical = FALSE)
+some.data
+summary(some.data)
+cor(some.data[, 1], some.data[, 2])
+as.data.frame(some.data)
+
+
+```
+
+## Step 1: write the code for one basic "iteration" of a loop
+
+```{r}
+# simulate data
+
+
+# perform test
+
+
+```
+
+## Step 2: figure out how you are going to store the results of each loop
+  - "pre-allocate" an object to act as the "results container"
+  - modify your one-time code to "fill in" part of that container
+
+```{r}
+
+
+```
+
+## Step 3: put code into a loop structure and test it out with a few iterations
+  - make a "progress bar" if you want
+
+```{r}
+
+
+```
+
+## Step 4: run it "for real" with full # of iterations
+
+```{r}
+
+
+```
+
+
+# Power analysis
+  - set up parameters of simulation
+  - run simulation loop
+  - process/analyze results
+
+```{r}
+
+
+```
+
+Going further: looping over sets of simulations!
+  - loops within loops
+
+```{r}
+# simple loop within loop
+
+# nested loops in power simulation
+
+```
+
+# Troubleshooting loops
+  - build incrementally
+  - "manually" set counter, step through code inside loop
+  - if you hit a snag, use "last value" of counter to identify where you hit that snag
+
+```{r}
+
+
+```
+
+# PRACTICE #4
